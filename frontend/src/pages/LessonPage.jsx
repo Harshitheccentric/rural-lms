@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { lessonAPI } from '../services/api';
+import Header from '../components/Header';
 import './LessonPage.css';
 
 /**
@@ -76,28 +77,31 @@ function LessonPage() {
     }
 
     return (
-        <div className="container">
-            <button onClick={goBack} className="back-button">
-                ← Back to {lesson.course_title}
-            </button>
+        <>
+            <Header />
+            <div className="container">
+                <button onClick={goBack} className="back-button">
+                    ← Back to {lesson.course_title}
+                </button>
 
-            <article className="lesson-content">
-                <header className="lesson-header">
-                    <p className="course-title">{lesson.course_title}</p>
-                    <h1>{lesson.title}</h1>
-                </header>
+                <article className="lesson-content">
+                    <header className="lesson-header">
+                        <p className="course-title">{lesson.course_title}</p>
+                        <h1>{lesson.title}</h1>
+                    </header>
 
-                <div className="lesson-body">
-                    {lesson.content.split('\n').map((paragraph, index) => (
-                        paragraph.trim() ? (
-                            <p key={index}>{paragraph}</p>
-                        ) : (
-                            <br key={index} />
-                        )
-                    ))}
-                </div>
-            </article>
-        </div>
+                    <div className="lesson-body">
+                        {lesson.content.split('\n').map((paragraph, index) => (
+                            paragraph.trim() ? (
+                                <p key={index}>{paragraph}</p>
+                            ) : (
+                                <br key={index} />
+                            )
+                        ))}
+                    </div>
+                </article>
+            </div>
+        </>
     );
 }
 

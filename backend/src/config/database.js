@@ -54,7 +54,18 @@ function initializeTables() {
     )
   `);
 
-    // TODO: Phase 4 - Add users table
+    // Users table (Phase 3b)
+    db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      full_name TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+    // TODO: Phase 4 - Add role field to users table (student/instructor/admin)
     // TODO: Phase 4 - Add enrollments table
     // TODO: Phase 4 - Add lesson_progress table
     // TODO: Phase 4 - Add indexes for performance
@@ -74,6 +85,42 @@ function seedData() {
     }
 
     console.log('Seeding database with initial data...');
+
+    // Seed users first (Phase 3b)
+    const bcrypt = require('bcrypt');
+    const insertUser = db.prepare(`
+    INSERT INTO users (email, password_hash, full_name, created_at)
+    VALUES (?, ?, ?, ?)
+  `);
+
+    const users = [
+        {
+            email: 'instructor@example.com',
+            password: 'password123',
+            full_name: 'John Instructor',
+            created_at: '2024-01-01T10:00:00Z'
+        },
+        {
+            email: 'student@example.com',
+            password: 'password123',
+            full_name: 'Jane Student',
+            created_at: '2024-01-02T10:00:00Z'
+        }
+    ];
+
+    const insertManyUsers = db.transaction((users) => {
+        for (const user of users) {
+            const password_hash = bcrypt.hashSync(user.password, 10);
+            insertUser.run(
+                user.email,
+                password_hash,
+                user.full_name,
+                user.created_at
+            );
+        }
+    });
+
+    insertManyUsers(users);
 
     // Insert courses
     const insertCourse = db.prepare(`
@@ -336,7 +383,7 @@ Sentence Punctuation:
 
     insertManyLessons(lessons);
 
-    console.log('✓ Database seeded with 3 courses and 7 lessons');
+    console.log('✓ Database seeded with 2 users, 3 courses, and 7 lessons');
 }
 
 /**

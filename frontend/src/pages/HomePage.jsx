@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { courseAPI } from '../services/api';
+import Header from '../components/Header';
 import './HomePage.css';
 
 /**
@@ -53,38 +54,41 @@ function HomePage() {
     }
 
     return (
-        <div className="container">
-            <header className="page-header">
-                <h1>Rural LMS</h1>
-                <p className="subtitle">Text-first learning for everyone</p>
-            </header>
+        <>
+            <Header />
+            <div className="container">
+                <header className="page-header">
+                    <h1>Rural LMS</h1>
+                    <p className="subtitle">Text-first learning for everyone</p>
+                </header>
 
-            <section className="courses-section">
-                <h2>Available Courses</h2>
+                <section className="courses-section">
+                    <h2>Available Courses</h2>
 
-                {courses.length === 0 ? (
-                    <p className="no-courses">No courses available yet.</p>
-                ) : (
-                    <div className="course-grid">
-                        {courses.map((course) => (
-                            <Link
-                                key={course.id}
-                                to={`/courses/${course.id}`}
-                                className="course-card"
-                            >
-                                <h3>{course.title}</h3>
-                                <p className="course-description">{course.description}</p>
-                                <div className="course-meta">
-                                    <span className="lesson-count">
-                                        📚 {course.lesson_count} {course.lesson_count === 1 ? 'lesson' : 'lessons'}
-                                    </span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </section>
-        </div>
+                    {courses.length === 0 ? (
+                        <p className="no-courses">No courses available yet.</p>
+                    ) : (
+                        <div className="course-grid">
+                            {courses.map((course) => (
+                                <Link
+                                    key={course.id}
+                                    to={`/courses/${course.id}`}
+                                    className="course-card"
+                                >
+                                    <h3>{course.title}</h3>
+                                    <p className="course-description">{course.description}</p>
+                                    <div className="course-meta">
+                                        <span className="lesson-count">
+                                            📚 {course.lesson_count} {course.lesson_count === 1 ? 'lesson' : 'lessons'}
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
+        </>
     );
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { courseAPI } from '../services/api';
+import Header from '../components/Header';
 import './CoursePage.css';
 
 /**
@@ -66,40 +67,43 @@ function CoursePage() {
     }
 
     return (
-        <div className="container">
-            <Link to="/" className="back-link">← Back to courses</Link>
+        <>
+            <Header />
+            <div className="container">
+                <Link to="/" className="back-link">← Back to courses</Link>
 
-            <header className="course-header">
-                <h1>{course.title}</h1>
-                <p className="course-description">{course.description}</p>
-            </header>
+                <header className="course-header">
+                    <h1>{course.title}</h1>
+                    <p className="course-description">{course.description}</p>
+                </header>
 
-            <section className="lessons-section">
-                <h2>Lessons ({course.lessons?.length || 0})</h2>
+                <section className="lessons-section">
+                    <h2>Lessons ({course.lessons?.length || 0})</h2>
 
-                {!course.lessons || course.lessons.length === 0 ? (
-                    <p className="no-lessons">No lessons available yet.</p>
-                ) : (
-                    <div className="lesson-list">
-                        {course.lessons.map((lesson, index) => (
-                            <Link
-                                key={lesson.id}
-                                to={`/lessons/${lesson.id}`}
-                                className="lesson-item"
-                            >
-                                <div className="lesson-number">{index + 1}</div>
-                                <div className="lesson-info">
-                                    <h3>{lesson.title}</h3>
-                                    <p className="lesson-preview">
-                                        {lesson.content.substring(0, 100)}...
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </section>
-        </div>
+                    {!course.lessons || course.lessons.length === 0 ? (
+                        <p className="no-lessons">No lessons available yet.</p>
+                    ) : (
+                        <div className="lesson-list">
+                            {course.lessons.map((lesson, index) => (
+                                <Link
+                                    key={lesson.id}
+                                    to={`/lessons/${lesson.id}`}
+                                    className="lesson-item"
+                                >
+                                    <div className="lesson-number">{index + 1}</div>
+                                    <div className="lesson-info">
+                                        <h3>{lesson.title}</h3>
+                                        <p className="lesson-preview">
+                                            {lesson.content.substring(0, 100)}...
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
+        </>
     );
 }
 

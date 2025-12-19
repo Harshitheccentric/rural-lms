@@ -2,19 +2,38 @@
  * API Service Layer
  * Handles all communication with the backend
  * 
- * TODO: Phase 3 - Add authentication headers
- * TODO: Phase 3 - Add request interceptors for token refresh
- * TODO: Phase 3 - Add retry logic for failed requests
+ * Phase 3b: Added JWT token support
+ * 
+ * TODO: Phase 4 - Add request interceptors for token refresh
+ * TODO: Phase 4 - Add retry logic for failed requests
+ * TODO: Phase 4 - Add request caching
  */
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
 /**
- * Generic fetch wrapper with error handling
+ * Generic fetch wrapper with error handling and auth support
  */
-async function fetchAPI(endpoint) {
+async function fetchAPI(endpoint, options = {}) {
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`);
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+
+        // Prepare headers
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        // Add auth header if token exists
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers
+        });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -53,8 +72,8 @@ export const courseAPI = {
         return fetchAPI(`/courses/${id}`);
     },
 
-    // TODO: Phase 3 - Add create, update, delete methods
-    // TODO: Phase 3 - Add enroll/unenroll methods
+    // TODO: Phase 4 - Add create, update, delete methods (instructor only)
+    // TODO: Phase 4 - Add enroll/unenroll methods (student only)
 };
 
 /**
@@ -69,16 +88,22 @@ export const lessonAPI = {
         return fetchAPI(`/lessons/${id}`);
     },
 
-    // TODO: Phase 3 - Add create, update, delete methods
-    // TODO: Phase 3 - Add mark complete method
+    // TODO: Phase 4 - Add create, update, delete methods (instructor only)
+    // TODO: Phase 4 - Add mark complete method (student only)
 };
 
 /**
- * Auth API methods (placeholder)
+ * Auth API methods
+ * Note: Auth methods are handled directly in AuthContext
+ * This is kept for reference and future expansion
  */
 export const authAPI = {
-    // TODO: Phase 3 - Implement login
-    // TODO: Phase 3 - Implement register
-    // TODO: Phase 3 - Implement logout
-    // TODO: Phase 3 - Implement getCurrentUser
+    // Implemented in AuthContext:
+    // - register(email, password, fullName)
+    // - login(email, password)
+    // - getCurrentUser() via /api/auth/me
+
+    // TODO: Phase 4 - Add password reset
+    // TODO: Phase 4 - Add email verification
+    // TODO: Phase 4 - Add update profile
 };

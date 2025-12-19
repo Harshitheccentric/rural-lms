@@ -1,53 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
+const { authMiddleware } = require('../middleware/auth');
 
 /**
- * Authentication Routes (PLACEHOLDER)
+ * Authentication Routes
  * 
- * Phase 1: These routes return 501 Not Implemented
+ * Phase 3b: Implemented JWT-based authentication
  * 
- * TODO: Phase 2 - Implement user registration
- * TODO: Phase 2 - Implement user login with JWT
- * TODO: Phase 2 - Implement password hashing with bcrypt
- * TODO: Phase 2 - Implement token refresh
- * TODO: Phase 2 - Implement logout (token invalidation)
- * TODO: Phase 2 - Add input validation (email format, password strength)
+ * TODO: Phase 4 - Add password reset routes
+ * TODO: Phase 4 - Add email verification routes
+ * TODO: Phase 4 - Add OAuth routes (Google, GitHub, etc.)
  */
 
 // Register new user
-router.post('/register', (req, res) => {
-    res.status(501).json({
-        success: false,
-        error: 'Authentication not implemented yet (Phase 2)',
-        message: 'User registration will be available in Phase 2'
-    });
-});
+router.post('/register', authController.register);
 
 // Login user
-router.post('/login', (req, res) => {
-    res.status(501).json({
-        success: false,
-        error: 'Authentication not implemented yet (Phase 2)',
-        message: 'User login will be available in Phase 2'
-    });
-});
+router.post('/login', authController.login);
 
-// Get current user (requires auth)
-router.get('/me', (req, res) => {
-    res.status(501).json({
-        success: false,
-        error: 'Authentication not implemented yet (Phase 2)',
-        message: 'User profile will be available in Phase 2'
-    });
-});
+// Get current user (requires authentication)
+router.get('/me', authMiddleware, authController.getCurrentUser);
 
-// Logout user
-router.post('/logout', (req, res) => {
-    res.status(501).json({
-        success: false,
-        error: 'Authentication not implemented yet (Phase 2)',
-        message: 'User logout will be available in Phase 2'
-    });
-});
+// TODO: Phase 4 - Add logout endpoint (token blacklist)
+// TODO: Phase 4 - Add POST /forgot-password
+// TODO: Phase 4 - Add POST /reset-password
+// TODO: Phase 4 - Add POST /verify-email
 
 module.exports = router;

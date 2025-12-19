@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
             health: '/health',
             courses: '/api/courses',
             lessons: '/api/lessons',
-            auth: '/api/auth (placeholder)'
+            auth: '/api/auth '
         }
     });
 });
@@ -90,7 +90,7 @@ try {
 app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗
-║     Rural LMS API - Phase 3a           ║
+║     Rural LMS API - Phase 3b           ║
 ╚════════════════════════════════════════╝
 
 Server running on: http://localhost:${PORT}
@@ -102,18 +102,21 @@ Available endpoints:
   GET  /api/courses
   GET  /api/courses/:id
   GET  /api/lessons/:id
-  POST /api/auth/register (placeholder)
-  POST /api/auth/login (placeholder)
+  POST /api/auth/register 
+  POST /api/auth/login 
 
-Phase 3a Features:
+  GET  /api/auth/me (requires auth)
+Phase 3b Features:
   ✓ SQLite database integration
+  ✓ JWT-based user authentication
+  ✓ Password hashing with bcrypt
   ✓ Read-only course and lesson APIs
   ✓ Database-backed data storage
 
 Phase 4 TODO:
   ⧗ PostgreSQL migration
-  ⧗ User authentication
-  ⧗ Role-based authorization
+  ⧗ Enrollment system
+  ⧗ Enrollment system
   ⧗ CRUD operations
   `);
 });
