@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { initializeDatabase } = require('./config/database');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -75,16 +76,26 @@ app.use((req, res) => {
 // TODO: Phase 2 - Add global error handler middleware
 
 /**
- * Start Server
+ * Initialize Database and Start Server
  */
+
+// Initialize database (create tables and seed data if needed)
+try {
+    initializeDatabase();
+} catch (error) {
+    console.error('Failed to initialize database:', error);
+    process.exit(1);
+}
+
 app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗
-║     Rural LMS API - Phase 1            ║
+║     Rural LMS API - Phase 3a           ║
 ╚════════════════════════════════════════╝
 
 Server running on: http://localhost:${PORT}
 Environment: ${process.env.NODE_ENV || 'development'}
+Database: SQLite (rural-lms.db)
 
 Available endpoints:
   GET  /health
@@ -94,13 +105,13 @@ Available endpoints:
   POST /api/auth/register (placeholder)
   POST /api/auth/login (placeholder)
 
-Phase 1 Features:
+Phase 3a Features:
+  ✓ SQLite database integration
   ✓ Read-only course and lesson APIs
-  ✓ In-memory mock data
-  ✓ Health check endpoint
+  ✓ Database-backed data storage
 
-Phase 2 TODO:
-  ⧗ Database integration
+Phase 4 TODO:
+  ⧗ PostgreSQL migration
   ⧗ User authentication
   ⧗ Role-based authorization
   ⧗ CRUD operations

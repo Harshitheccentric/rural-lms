@@ -1,18 +1,19 @@
-# Rural LMS Backend - Phase 1
+# Rural LMS Backend - Phase 3a
 
 A minimal, text-first Learning Management System backend designed for accessibility and low-bandwidth environments.
 
-## Phase 1 Features
+## Phase 3a Features
 
 ✅ **Implemented:**
 - Express.js server with minimal dependencies
+- **SQLite database** with automatic initialization
 - Read-only REST API for courses and lessons
-- In-memory mock data (no database yet)
+- Database-backed data storage with foreign key constraints
 - Health check endpoint
 - CORS enabled for frontend integration
 
-❌ **Not Yet Implemented (Phase 2):**
-- Database integration
+❌ **Not Yet Implemented (Phase 4):**
+- PostgreSQL migration
 - User authentication and authorization
 - Role-based permissions
 - Enrollment system
@@ -42,6 +43,28 @@ A minimal, text-first Learning Management System backend designed for accessibil
    ```
    
    Edit `.env` if you want to change the port (default: 3000)
+
+## Database Setup
+
+The backend uses **SQLite** for data storage. The database is automatically initialized when you start the server.
+
+**Database file**: `rural-lms.db` (created automatically in the backend directory)
+
+**What happens on first run:**
+1. Creates `courses` and `lessons` tables
+2. Seeds database with 3 sample courses and 7 lessons
+3. Enables foreign key constraints
+
+**To reset the database:**
+```bash
+rm rural-lms.db
+npm start  # Database will be recreated and reseeded
+```
+
+**Database schema:**
+- `courses` table: id, title, description, instructor_id, is_published, timestamps
+- `lessons` table: id, course_id, title, content, order_index, timestamps
+- Foreign key: `lessons.course_id` → `courses.id` (CASCADE delete)
 
 ## Running the Server
 
@@ -206,34 +229,37 @@ curl -X POST http://localhost:3000/api/auth/login
 ```
 backend/
 ├── src/
+│   ├── config/
+│   │   └── database.js          # SQLite database configuration
 │   ├── data/
-│   │   └── mockData.js          # In-memory courses and lessons
+│   │   └── mockData.js          # [DEPRECATED] Old mock data
 │   ├── routes/
 │   │   ├── auth.js              # [PLACEHOLDER] Auth routes
 │   │   ├── courses.js           # Course routes
 │   │   └── lessons.js           # Lesson routes
 │   ├── controllers/
-│   │   ├── courseController.js  # Course logic
-│   │   └── lessonController.js  # Lesson logic
+│   │   ├── courseController.js  # Course logic (uses database)
+│   │   └── lessonController.js  # Lesson logic (uses database)
 │   └── server.js                # Express app entry point
+├── rural-lms.db                 # SQLite database file (auto-generated)
 ├── package.json
 ├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
-## Mock Data
+## Database Contents
 
-The system includes 3 sample courses:
+The database includes 3 sample courses:
 1. **Introduction to Web Development** (3 lessons)
 2. **Basic Computer Literacy** (2 lessons)
 3. **English Grammar Fundamentals** (2 lessons)
 
-All data is stored in `src/data/mockData.js` and will be replaced with database queries in Phase 2.
+All data is stored in the SQLite database (`rural-lms.db`) and persists across server restarts.
 
-## Next Steps (Phase 2)
+## Next Steps (Phase 4)
 
-- [ ] Set up PostgreSQL/SQLite database
+- [ ] Migrate to PostgreSQL for production
 - [ ] Implement user authentication with JWT
 - [ ] Add role-based authorization (student/instructor/admin)
 - [ ] Implement enrollment system
