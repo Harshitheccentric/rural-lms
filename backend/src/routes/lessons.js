@@ -1,22 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const lessonController = require('../controllers/lessonController');
+const { authMiddleware } = require('../middleware/auth');
 
 /**
  * Lesson Routes
  * 
- * TODO: Phase 2 - Add authentication middleware
- * TODO: Phase 2 - Add enrollment check middleware
- * TODO: Phase 2 - Add input validation middleware
+ * Phase 3c: Added authentication and enrollment checks
+ * 
+ * TODO: Phase 4 - Add input validation middleware
  */
 
-// Get single lesson
-router.get('/:id', lessonController.getLessonById);
+// Get single lesson (requires authentication and enrollment)
+router.get('/:id', authMiddleware, lessonController.getLessonById);
 
-// TODO: Phase 2 - Add POST /api/courses/:courseId/lessons (create lesson - instructor/owner only)
-// TODO: Phase 2 - Add PUT /api/lessons/:id (update lesson - instructor/owner only)
-// TODO: Phase 2 - Add DELETE /api/lessons/:id (delete lesson - instructor/owner only)
-// TODO: Phase 2 - Add PUT /api/lessons/:id/reorder (reorder lessons - instructor/owner only)
-// TODO: Phase 2 - Add POST /api/lessons/:id/complete (mark complete - student only)
+// TODO: Phase 4 - Add POST /api/courses/:courseId/lessons (create lesson - instructor/owner only)
+// TODO: Phase 4 - Add PUT /api/lessons/:id (update lesson - instructor/owner only)
+// TODO: Phase 4 - Add DELETE /api/lessons/:id (delete lesson - instructor/owner only)
+// TODO: Phase 4 - Add PUT /api/lessons/:id/reorder (reorder lessons - instructor/owner only)
+// TODO: Phase 4 - Add POST /api/lessons/:id/complete (mark complete - student only)
 
 module.exports = router;
+

@@ -1,25 +1,33 @@
 const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/courseController');
+const enrollmentController = require('../controllers/enrollmentController');
+const { authMiddleware, optionalAuth } = require('../middleware/auth');
 
 /**
  * Course Routes
  * 
- * TODO: Phase 2 - Add authentication middleware
- * TODO: Phase 2 - Add role-based authorization middleware
- * TODO: Phase 2 - Add input validation middleware
+ * Phase 3c: Added enrollment routes
+ * 
+ * TODO: Phase 4 - Add role-based authorization middleware
+ * TODO: Phase 4 - Add input validation middleware
  */
 
-// Get all courses
+// Get all courses (public)
 router.get('/', courseController.getAllCourses);
 
-// Get single course with lessons
-router.get('/:id', courseController.getCourseById);
+// Get single course with lessons (public, but shows enrollment status if logged in)
+router.get('/:id', optionalAuth, courseController.getCourseById);
 
-// TODO: Phase 2 - Add POST /api/courses (create course - instructor only)
-// TODO: Phase 2 - Add PUT /api/courses/:id (update course - instructor/owner only)
-// TODO: Phase 2 - Add DELETE /api/courses/:id (delete course - instructor/owner only)
-// TODO: Phase 2 - Add POST /api/courses/:id/enroll (enroll in course - student only)
-// TODO: Phase 2 - Add DELETE /api/courses/:id/enroll (unenroll - student only)
+// Enroll in course (requires authentication)
+router.post('/:id/enroll', authMiddleware, enrollmentController.enrollInCourse);
+
+// Unenroll from course (requires authentication)
+router.delete('/:id/enroll', authMiddleware, enrollmentController.unenrollFromCourse);
+
+// TODO: Phase 4 - Add POST /api/courses (create course - instructor only)
+// TODO: Phase 4 - Add PUT /api/courses/:id (update course - instructor/owner only)
+// TODO: Phase 4 - Add DELETE /api/courses/:id (delete course - instructor/owner only)
 
 module.exports = router;
+

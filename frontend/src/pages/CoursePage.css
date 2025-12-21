@@ -103,3 +103,69 @@
         padding: 1rem;
     }
 }
+
+/* Phase 3c: Enrollment Section */
+.enrollment-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.enrollment-message {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.enrollment-message a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.enrollment-message a:hover {
+    text-decoration: underline;
+}
+
+.enroll-button,
+.unenroll-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.enroll-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.enroll-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.unenroll-button {
+    background-color: #ef4444;
+    color: white;
+}
+
+.unenroll-button:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+.enroll-button:disabled,
+.unenroll-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 4px;
+    color: #c00;
+}

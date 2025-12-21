@@ -13,6 +13,8 @@ const { db } = require('../config/database');
 /**
  * Get single lesson by ID
  * GET /api/lessons/:id
+ * 
+ * Phase 3c: Requires authentication and enrollment
  */
 const getLessonById = (req, res) => {
     try {
@@ -22,7 +24,8 @@ const getLessonById = (req, res) => {
         const lesson = db.prepare(`
       SELECT 
         l.*,
-        c.title as course_title
+        c.title as course_title,
+        c.id as course_id
       FROM lessons l
       LEFT JOIN courses c ON l.course_id = c.id
       WHERE l.id = ?
@@ -35,7 +38,23 @@ const getLessonById = (req, res) => {
             });
         }
 
-        // TODO: Phase 4 - Check if user is enrolled in the course or is the instructor
+        // Check if user is enrolled in the course (Phase 3c)
+        const enrollment = db.prepare(`
+      SELECT id FROM enrollments 
+      WHERE user_id = ? AND course_id = ?
+    `).get(req.user.id, lesson.course_id);
+
+        if (!enrollment) {
+            return res.status(403).json({
+                success: false,
+                error: 'You must be enrolled in this course to access this lesson',
+                code: 'NOT_ENROLLED',
+                course_id: lesson.course_id
+            });
+        }
+
+        // TODO: Phase 4 - Track lesson view/progress
+        // TODO: Phase 4 - Add AI-generated summary
 
         res.json({
             success: true,

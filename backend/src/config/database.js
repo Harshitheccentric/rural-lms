@@ -65,8 +65,20 @@ function initializeTables() {
     )
   `);
 
+    // Enrollments table (Phase 3c)
+    db.exec(`
+    CREATE TABLE IF NOT EXISTS enrollments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      course_id INTEGER NOT NULL,
+      enrolled_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+      UNIQUE(user_id, course_id)
+    )
+  `);
+
     // TODO: Phase 4 - Add role field to users table (student/instructor/admin)
-    // TODO: Phase 4 - Add enrollments table
     // TODO: Phase 4 - Add lesson_progress table
     // TODO: Phase 4 - Add indexes for performance
 

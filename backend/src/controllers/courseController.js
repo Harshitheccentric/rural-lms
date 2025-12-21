@@ -52,6 +52,8 @@ const getAllCourses = (req, res) => {
 /**
  * Get single course by ID with its lessons
  * GET /api/courses/:id
+ * 
+ * Phase 3c: Added enrollment status when user is authenticated
  */
 const getCourseById = (req, res) => {
     try {
@@ -76,11 +78,22 @@ const getCourseById = (req, res) => {
       ORDER BY order_index ASC
     `).all(courseId);
 
+        // Check enrollment status if user is authenticated
+        let isEnrolled = false;
+        if (req.user) {
+            const enrollment = db.prepare(`
+        SELECT id FROM enrollments 
+        WHERE user_id = ? AND course_id = ?
+      `).get(req.user.id, courseId);
+            isEnrolled = !!enrollment;
+        }
+
         // Format response
         const formattedCourse = {
             ...course,
             is_published: Boolean(course.is_published),
-            lessons: lessons
+            lessons: lessons,
+            is_enrolled: isEnrolled // Phase 3c: Include enrollment status
         };
 
         res.json({

@@ -72,8 +72,27 @@ export const courseAPI = {
         return fetchAPI(`/courses/${id}`);
     },
 
+    /**
+     * Enroll in a course (Phase 3c)
+     * POST /api/courses/:id/enroll
+     */
+    enroll: async (id) => {
+        return fetchAPI(`/courses/${id}/enroll`, {
+            method: 'POST'
+        });
+    },
+
+    /**
+     * Unenroll from a course (Phase 3c)
+     * DELETE /api/courses/:id/enroll
+     */
+    unenroll: async (id) => {
+        return fetchAPI(`/courses/${id}/enroll`, {
+            method: 'DELETE'
+        });
+    },
+
     // TODO: Phase 4 - Add create, update, delete methods (instructor only)
-    // TODO: Phase 4 - Add enroll/unenroll methods (student only)
 };
 
 /**
