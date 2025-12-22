@@ -9,13 +9,13 @@ import './CoursePage.css';
  * Course Page - Shows course details and lesson list
  * 
  * Phase 3c: Added enrollment functionality
- * 
- * TODO: Phase 4 - Track lesson completion progress
+ * Phase 4a: Added progress tracking
  */
 function CoursePage() {
     const { courseId } = useParams();
     const { user, isAuthenticated } = useAuth();
     const [course, setCourse] = useState(null);
+    const [progress, setProgress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [enrolling, setEnrolling] = useState(false);
@@ -30,6 +30,13 @@ function CoursePage() {
             setError(null);
             const data = await courseAPI.getById(courseId);
             setCourse(data);
+
+            // Load progress if enrolled (Phase 4a)
+            if (data.is_enrolled) {
+                await loadProgress();
+            } else {
+                setProgress(null);
+            }
         } catch (err) {
             setError('Failed to load course. Please try again.');
             console.error(err);
@@ -38,12 +45,22 @@ function CoursePage() {
         }
     };
 
+    const loadProgress = async () => {
+        try {
+            const progressData = await courseAPI.getProgress(courseId);
+            setProgress(progressData);
+        } catch (err) {
+            console.error('Failed to load progress:', err);
+            // Don't show error to user, progress is optional
+        }
+    };
+
     const handleEnroll = async () => {
         try {
             setEnrolling(true);
             setError(null);
             await courseAPI.enroll(courseId);
-            // Reload course to update enrollment status
+            // Reload course to update enrollment status and progress
             await loadCourse();
         } catch (err) {
             setError('Failed to enroll. Please try again.');
@@ -120,13 +137,31 @@ function CoursePage() {
                                 <Link to="/login">Login</Link> to enroll in this course
                             </p>
                         ) : course.is_enrolled ? (
-                            <button
-                                onClick={handleUnenroll}
-                                disabled={enrolling}
-                                className="unenroll-button"
-                            >
-                                {enrolling ? 'Processing...' : 'Unenroll'}
-                            </button>
+                            <>
+                                {/* Phase 4a: Progress indicator */}
+                                {progress && (
+                                    <div className="progress-indicator">
+                                        <div className="progress-text">
+                                            <strong>{progress.completed_lessons} / {progress.total_lessons}</strong> lessons completed
+                                            <span className="progress-percentage"> ({progress.percentage}%)</span>
+                                        </div>
+                                        <div className="progress-bar">
+                                            <div
+                                                className="progress-fill"
+                                                style={{ width: `${progress.percentage}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={handleUnenroll}
+                                    disabled={enrolling}
+                                    className="unenroll-button"
+                                >
+                                    {enrolling ? 'Processing...' : 'Unenroll'}
+                                </button>
+                            </>
                         ) : (
                             <button
                                 onClick={handleEnroll}

@@ -119,3 +119,56 @@
 .access-denied .back-link:hover {
     text-decoration: underline;
 }
+/* Phase 4a: Completion Section */
+.completion-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.completed-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #d1fae5;
+    color: #065f46;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.completed-date {
+    margin-left: 0.5rem;
+    font-weight: normal;
+    color: #047857;
+}
+
+.complete-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: white;
+    transition: all 0.2s;
+}
+
+.complete-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.complete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 4px;
+    color: #c00;
+}

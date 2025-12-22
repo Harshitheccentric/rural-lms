@@ -9,11 +9,11 @@ import './LessonPage.css';
  * Lesson Page - Shows lesson content
  * 
  * Phase 3c: Added authorization checks (authentication + enrollment)
+ * Phase 4a: Added lesson completion tracking
  * 
- * TODO: Phase 4 - Add "Mark as Complete" button
- * TODO: Phase 4 - Add previous/next lesson navigation
- * TODO: Phase 4 - Track reading progress
- * TODO: Phase 4 - Add AI summary feature
+ * TODO: Phase 5 - Add previous/next lesson navigation
+ * TODO: Phase 5 - Track reading progress
+ * TODO: Phase 5 - Add AI summary feature
  */
 function LessonPage() {
     const { lessonId } = useParams();
@@ -23,6 +23,7 @@ function LessonPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [notEnrolled, setNotEnrolled] = useState(false);
+    const [completing, setCompleting] = useState(false);
 
     useEffect(() => {
         loadLesson();
@@ -45,6 +46,21 @@ function LessonPage() {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleMarkComplete = async () => {
+        try {
+            setCompleting(true);
+            setError(null);
+            await lessonAPI.markComplete(lessonId);
+            // Reload lesson to update completion status
+            await loadLesson();
+        } catch (err) {
+            setError('Failed to mark lesson as complete. Please try again.');
+            console.error(err);
+        } finally {
+            setCompleting(false);
         }
     };
 
@@ -99,7 +115,7 @@ function LessonPage() {
         );
     }
 
-    if (error) {
+    if (error && !lesson) {
         return (
             <div className="container">
                 <div className="error">
@@ -134,6 +150,32 @@ function LessonPage() {
                     <header className="lesson-header">
                         <p className="course-title">{lesson.course_title}</p>
                         <h1>{lesson.title}</h1>
+
+                        {/* Phase 4a: Completion status and button */}
+                        <div className="completion-section">
+                            {lesson.is_completed ? (
+                                <div className="completed-badge">
+                                    ✓ Completed
+                                    {lesson.completed_at && (
+                                        <span className="completed-date">
+                                            {' on ' + new Date(lesson.completed_at).toLocaleDateString()}
+                                        </span>
+                                    )}
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleMarkComplete}
+                                    disabled={completing}
+                                    className="complete-button"
+                                >
+                                    {completing ? 'Marking Complete...' : 'Mark as Completed'}
+                                </button>
+                            )}
+                        </div>
+
+                        {error && lesson && (
+                            <div className="error-message">{error}</div>
+                        )}
                     </header>
 
                     <div className="lesson-body">

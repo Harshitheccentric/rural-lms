@@ -73,6 +73,14 @@ export const courseAPI = {
     },
 
     /**
+     * Get course progress (Phase 4a)
+     * GET /api/courses/:id/progress
+     */
+    getProgress: async (id) => {
+        return fetchAPI(`/courses/${id}/progress`);
+    },
+
+    /**
      * Enroll in a course (Phase 3c)
      * POST /api/courses/:id/enroll
      */
@@ -92,7 +100,7 @@ export const courseAPI = {
         });
     },
 
-    // TODO: Phase 4 - Add create, update, delete methods (instructor only)
+    // TODO: Phase 5 - Add create, update, delete methods (instructor only)
 };
 
 /**
@@ -107,8 +115,17 @@ export const lessonAPI = {
         return fetchAPI(`/lessons/${id}`);
     },
 
-    // TODO: Phase 4 - Add create, update, delete methods (instructor only)
-    // TODO: Phase 4 - Add mark complete method (student only)
+    /**
+     * Mark lesson as complete (Phase 4a)
+     * POST /api/lessons/:id/complete
+     */
+    markComplete: async (id) => {
+        return fetchAPI(`/lessons/${id}/complete`, {
+            method: 'POST'
+        });
+    },
+
+    // TODO: Phase 5 - Add create, update, delete methods (instructor only)
 };
 
 /**
@@ -122,7 +139,7 @@ export const authAPI = {
     // - login(email, password)
     // - getCurrentUser() via /api/auth/me
 
-    // TODO: Phase 4 - Add password reset
-    // TODO: Phase 4 - Add email verification
-    // TODO: Phase 4 - Add update profile
+    // TODO: Phase 5 - Add password reset
+    // TODO: Phase 5 - Add email verification
+    // TODO: Phase 5 - Add update profile
 };

@@ -15,6 +15,7 @@ const { db } = require('../config/database');
  * GET /api/lessons/:id
  * 
  * Phase 3c: Requires authentication and enrollment
+ * Phase 4a: Includes completion status
  */
 const getLessonById = (req, res) => {
     try {
@@ -53,8 +54,19 @@ const getLessonById = (req, res) => {
             });
         }
 
-        // TODO: Phase 4 - Track lesson view/progress
-        // TODO: Phase 4 - Add AI-generated summary
+        // Check if lesson is completed (Phase 4a)
+        const progress = db.prepare(`
+      SELECT completed, completed_at FROM lesson_progress
+      WHERE enrollment_id = ? AND lesson_id = ?
+    `).get(enrollment.id, lessonId);
+
+        // Add completion status to lesson data
+        lesson.is_completed = progress ? Boolean(progress.completed) : false;
+        lesson.completed_at = progress?.completed_at || null;
+
+        // TODO: Phase 5 - Add AI-generated summary
+        // TODO: Phase 5 - Add personalized difficulty rating
+        // TODO: Phase 5 - Add recommended next lessons
 
         res.json({
             success: true,
