@@ -162,5 +162,12 @@ export const dashboardAPI = {
      */
     getData: async () => {
         return fetchAPI('/dashboard');
+    },
+
+    /**
+     * Get dashboard (alias)
+     */
+    getDashboard: async () => {
+        return fetchAPI('/dashboard');
     }
 };

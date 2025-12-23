@@ -9,6 +9,7 @@ const courseRoutes = require('./routes/courses');
 const lessonRoutes = require('./routes/lessons');
 const dashboardRoutes = require('./routes/dashboard');
 const achievementsRoutes = require('./routes/achievements');
+const { speedTest } = require('./controllers/contentController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,6 +53,9 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/achievements', achievementsRoutes);
+
+// Speed test endpoint for bandwidth detection
+app.get('/api/speed-test', speedTest);
 
 // Root endpoint
 app.get('/', (req, res) => {
