@@ -93,6 +93,19 @@ function initializeTables() {
     )
   `);
 
+  // Lesson Completions table (Phase 4a - simpler completion tracking)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS lesson_completions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      lesson_id INTEGER NOT NULL,
+      completed_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+      UNIQUE(user_id, lesson_id)
+    )
+  `);
+
   // Achievements table (Phase 5)
   db.exec(`
     CREATE TABLE IF NOT EXISTS achievements (

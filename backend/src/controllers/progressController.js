@@ -87,6 +87,17 @@ const markLessonComplete = (req, res) => {
       `).run(enrollment.id, lessonId, completedAt);
         }
 
+        // Also insert into lesson_completions for dashboard tracking
+        try {
+            db.prepare(`
+        INSERT OR IGNORE INTO lesson_completions (user_id, lesson_id, completed_at)
+        VALUES (?, ?, ?)
+      `).run(userId, lessonId, completedAt);
+        } catch (err) {
+            // If already exists, that's fine
+            console.log('Completion already tracked');
+        }
+
         // Phase 5: Auto-award achievements
         const newAchievements = checkAndAwardAchievements(userId);
 
