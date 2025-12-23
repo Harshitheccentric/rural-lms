@@ -15,25 +15,68 @@ const { db } = require('../config/database');
 /**
  * Get all courses
  * GET /api/courses
+ * Enhanced with enrollment count and user progress
  */
 const getAllCourses = (req, res) => {
     try {
-        // Query all courses from database
+        const userId = req.user ? req.user.id : null;
+
+        // Query all courses with enrollment count
         const courses = db.prepare(`
       SELECT 
         c.*,
-        COUNT(l.id) as lesson_count
+        COUNT(DISTINCT l.id) as lesson_count,
+        COUNT(DISTINCT e.id) as enrollment_count
       FROM courses c
       LEFT JOIN lessons l ON c.id = l.course_id
+      LEFT JOIN enrollments e ON c.id = e.course_id
       GROUP BY c.id
       ORDER BY c.created_at DESC
     `).all();
 
-        // Convert SQLite boolean (0/1) to JavaScript boolean
-        const formattedCourses = courses.map(course => ({
-            ...course,
-            is_published: Boolean(course.is_published)
-        }));
+        // If user is authenticated, get their enrollment status and progress
+        const formattedCourses = courses.map(course => {
+            const courseData = {
+                ...course,
+                is_published: Boolean(course.is_published)
+            };
+
+            if (userId) {
+                // Check enrollment
+                const enrollment = db.prepare(`
+          SELECT id FROM enrollments 
+          WHERE user_id = ? AND course_id = ?
+        `).get(userId, course.id);
+
+                courseData.is_enrolled = !!enrollment;
+
+                // If enrolled, get progress
+                if (enrollment) {
+                    const progress = db.prepare(`
+            SELECT 
+              COUNT(DISTINCT l.id) as total_lessons,
+              COUNT(DISTINCT CASE WHEN lp.completed = 1 THEN lp.lesson_id END) as completed_lessons
+            FROM lessons l
+            LEFT JOIN lesson_progress lp ON l.id = lp.lesson_id AND lp.enrollment_id = ?
+            WHERE l.course_id = ?
+          `).get(enrollment.id, course.id);
+
+                    courseData.progress_percentage = progress.total_lessons > 0
+                        ? Math.round((progress.completed_lessons / progress.total_lessons) * 100)
+                        : 0;
+                    courseData.completed_lessons = progress.completed_lessons;
+                } else {
+                    courseData.progress_percentage = 0;
+                    courseData.completed_lessons = 0;
+                }
+            } else {
+                courseData.is_enrolled = false;
+                courseData.progress_percentage = 0;
+                courseData.completed_lessons = 0;
+            }
+
+            return courseData;
+        });
 
         res.json({
             success: true,

@@ -7,6 +7,8 @@ const { initializeDatabase } = require('./config/database');
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
 const lessonRoutes = require('./routes/lessons');
+const dashboardRoutes = require('./routes/dashboard');
+const achievementsRoutes = require('./routes/achievements');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,6 +50,8 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/lessons', lessonRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/achievements', achievementsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

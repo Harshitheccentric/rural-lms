@@ -1,10 +1,12 @@
 const { db } = require('../config/database');
+const { checkAndAwardAchievements } = require('./achievementsController');
 
 /**
  * Progress Controller
  * Handles lesson completion and progress tracking
  * 
  * Phase 4a: Minimal progress tracking
+ * Phase 5: Added achievement auto-awarding
  * 
  * TODO: Phase 5 - Add time tracking
  * TODO: Phase 5 - Add quiz scores
@@ -85,6 +87,9 @@ const markLessonComplete = (req, res) => {
       `).run(enrollment.id, lessonId, completedAt);
         }
 
+        // Phase 5: Auto-award achievements
+        const newAchievements = checkAndAwardAchievements(userId);
+
         // TODO: Phase 5 - Track time spent on lesson
         // TODO: Phase 5 - Trigger AI personalization based on progress
 
@@ -94,7 +99,8 @@ const markLessonComplete = (req, res) => {
             data: {
                 lesson_id: lessonId,
                 completed: true,
-                completed_at: completedAt
+                completed_at: completedAt,
+                new_achievements: newAchievements
             }
         });
     } catch (error) {

@@ -23,8 +23,14 @@ function Header() {
                 <nav className="header-nav">
                     {isAuthenticated ? (
                         <div className="header-auth">
+                            <Link to="/dashboard" className="header-link">
+                                Dashboard
+                            </Link>
+                            <Link to="/" className="header-link">
+                                Courses
+                            </Link>
                             <span className="header-user">
-                                Welcome, {user?.full_name}
+                                {user?.full_name}
                             </span>
                             <button onClick={logout} className="header-logout">
                                 Logout

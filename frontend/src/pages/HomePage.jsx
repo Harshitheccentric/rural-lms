@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { courseAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import './HomePage.css';
 
 /**
  * Home Page - Lists all available courses
- * 
- * TODO: Phase 3 - Add search/filter functionality
- * TODO: Phase 3 - Add pagination
- * TODO: Phase 3 - Show enrollment status for logged-in users
+ * Enhanced with course stats and progress tracking
  */
 function HomePage() {
+    const { isAuthenticated } = useAuth();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -32,6 +31,43 @@ function HomePage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Helper function to determine difficulty based on lesson count
+    const getDifficulty = (lessonCount) => {
+        if (lessonCount <= 3) return { level: 'Beginner', className: 'beginner' };
+        if (lessonCount <= 7) return { level: 'Intermediate', className: 'intermediate' };
+        return { level: 'Advanced', className: 'advanced' };
+    };
+
+    // Helper function to calculate estimated time
+    const getEstimatedTime = (lessonCount) => {
+        const minutes = lessonCount * 15;
+        if (minutes < 60) return `${minutes} min`;
+        const hours = Math.floor(minutes / 60);
+        const remainingMin = minutes % 60;
+        return remainingMin > 0 ? `${hours}h ${remainingMin}m` : `${hours}h`;
+    };
+
+    // Helper function to get category color
+    const getCategoryColor = (category) => {
+        const colors = {
+            'Web Development': 'blue',
+            'Computer Skills': 'green',
+            'Language': 'purple',
+            'Math': 'orange',
+            'Science': 'red',
+            'General': 'gray'
+        };
+        return colors[category] || 'gray';
+    };
+
+    // Helper function for progress level
+    const getProgressLevel = (percentage) => {
+        if (percentage === 0) return 'not-started';
+        if (percentage < 50) return 'in-progress';
+        if (percentage < 100) return 'almost-done';
+        return 'completed';
     };
 
     if (loading) {
@@ -69,21 +105,68 @@ function HomePage() {
                         <p className="no-courses">No courses available yet.</p>
                     ) : (
                         <div className="course-grid">
-                            {courses.map((course) => (
-                                <Link
-                                    key={course.id}
-                                    to={`/courses/${course.id}`}
-                                    className="course-card"
-                                >
-                                    <h3>{course.title}</h3>
-                                    <p className="course-description">{course.description}</p>
-                                    <div className="course-meta">
-                                        <span className="lesson-count">
-                                            📚 {course.lesson_count} {course.lesson_count === 1 ? 'lesson' : 'lessons'}
-                                        </span>
-                                    </div>
-                                </Link>
-                            ))}
+                            {courses.map((course) => {
+                                const difficulty = getDifficulty(course.lesson_count);
+                                const estimatedTime = getEstimatedTime(course.lesson_count);
+                                const categoryColor = getCategoryColor(course.category);
+
+                                return (
+                                    <Link
+                                        key={course.id}
+                                        to={`/courses/${course.id}`}
+                                        className="course-card"
+                                    >
+                                        <div className="card-header">
+                                            <h3>{course.title}</h3>
+                                            <span className={`difficulty-badge ${difficulty.className}`}>
+                                                {difficulty.level}
+                                            </span>
+                                        </div>
+
+                                        <p className="course-description">{course.description}</p>
+
+                                        {course.category && (
+                                            <div className="course-tags">
+                                                <span className={`category-tag ${categoryColor}`}>
+                                                    {course.category}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        <div className="course-stats">
+                                            <div className="stat-item">
+                                                <span className="stat-icon">📚</span>
+                                                <span>{course.lesson_count} lesson{course.lesson_count !== 1 ? 's' : ''}</span>
+                                            </div>
+                                            <div className="stat-item">
+                                                <span className="stat-icon">⏱️</span>
+                                                <span>{estimatedTime}</span>
+                                            </div>
+                                            <div className="stat-item">
+                                                <span className="stat-icon">👥</span>
+                                                <span>{course.enrollment_count} enrolled</span>
+                                            </div>
+                                        </div>
+
+                                        {isAuthenticated && course.is_enrolled && (
+                                            <div className="course-progress-section">
+                                                <div className="progress-info">
+                                                    <span className="progress-label">Your Progress</span>
+                                                    <span className="progress-percentage">
+                                                        {course.progress_percentage}%
+                                                    </span>
+                                                </div>
+                                                <div className="progress-bar-container">
+                                                    <div 
+                                                        className={`progress-bar-fill ${getProgressLevel(course.progress_percentage)}`}
+                                                        style={{ width: `${course.progress_percentage}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     )}
                 </section>

@@ -34,6 +34,7 @@ function initializeTables() {
       title TEXT NOT NULL,
       description TEXT,
       instructor_id INTEGER NOT NULL,
+      category TEXT DEFAULT 'General',
       is_published BOOLEAN DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -89,6 +90,34 @@ function initializeTables() {
       FOREIGN KEY (enrollment_id) REFERENCES enrollments(id) ON DELETE CASCADE,
       FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
       UNIQUE(enrollment_id, lesson_id)
+    )
+  `);
+
+  // Achievements table (Phase 5)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS achievements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      achievement_type TEXT NOT NULL,
+      earned_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, achievement_type)
+    )
+  `);
+
+  // Content Variants table (Phase 6 - Adaptive Content Delivery)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS content_variants (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      lesson_id INTEGER NOT NULL,
+      bandwidth_type TEXT NOT NULL,
+      content_type TEXT NOT NULL,
+      content_url TEXT,
+      content_text TEXT,
+      file_size_mb REAL DEFAULT 0,
+      quality TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
     )
   `);
 
@@ -151,8 +180,8 @@ function seedData() {
 
   // Insert courses
   const insertCourse = db.prepare(`
-    INSERT INTO courses (title, description, instructor_id, is_published, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO courses (title, description, instructor_id, category, is_published, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
   const courses = [
@@ -160,6 +189,7 @@ function seedData() {
       title: 'Introduction to Web Development',
       description: 'Learn the basics of HTML, CSS, and JavaScript. Perfect for beginners who want to build their first website.',
       instructor_id: 1,
+      category: 'Web Development',
       is_published: 1,
       created_at: '2024-01-15T10:00:00Z',
       updated_at: '2024-01-15T10:00:00Z'
@@ -168,6 +198,7 @@ function seedData() {
       title: 'Basic Computer Literacy',
       description: 'Essential computer skills including file management, internet browsing, and email communication.',
       instructor_id: 1,
+      category: 'Computer Skills',
       is_published: 1,
       created_at: '2024-01-20T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z'
@@ -176,6 +207,7 @@ function seedData() {
       title: 'English Grammar Fundamentals',
       description: 'Master the fundamentals of English grammar with simple, text-based lessons and exercises.',
       instructor_id: 2,
+      category: 'Language',
       is_published: 1,
       created_at: '2024-02-01T10:00:00Z',
       updated_at: '2024-02-01T10:00:00Z'
@@ -188,6 +220,7 @@ function seedData() {
         course.title,
         course.description,
         course.instructor_id,
+        course.category,
         course.is_published,
         course.created_at,
         course.updated_at

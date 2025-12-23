@@ -116,6 +116,14 @@ export const lessonAPI = {
     },
 
     /**
+     * Get lesson content with bandwidth awareness
+     * GET /api/lessons/:id/content?bandwidth=low|medium|high
+     */
+    getContent: async (id, bandwidth = 'low') => {
+        return fetchAPI(`/lessons/${id}/content?bandwidth=${bandwidth}`);
+    },
+
+    /**
      * Mark lesson as complete (Phase 4a)
      * POST /api/lessons/:id/complete
      */
@@ -142,4 +150,17 @@ export const authAPI = {
     // TODO: Phase 5 - Add password reset
     // TODO: Phase 5 - Add email verification
     // TODO: Phase 5 - Add update profile
+};
+
+/**
+ * Dashboard API methods
+ */
+export const dashboardAPI = {
+    /**
+     * Get student dashboard data
+     * GET /api/dashboard
+     */
+    getData: async () => {
+        return fetchAPI('/dashboard');
+    }
 };

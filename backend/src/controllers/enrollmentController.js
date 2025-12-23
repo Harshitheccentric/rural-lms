@@ -1,10 +1,12 @@
 const { db } = require('../config/database');
+const { checkAndAwardAchievements } = require('./achievementsController');
 
 /**
  * Enrollment Controller
  * Handles course enrollment operations
  * 
  * Phase 3c: Basic enrollment/unenrollment
+ * Phase 5: Added achievement auto-awarding
  * 
  * TODO: Phase 4 - Add enrollment analytics
  * TODO: Phase 4 - Add enrollment limits/capacity
@@ -52,6 +54,9 @@ const enrollInCourse = (req, res) => {
       VALUES (?, ?, ?)
     `).run(userId, courseId, new Date().toISOString());
 
+        // Phase 5: Check and award achievements (first course)
+        const newAchievements = checkAndAwardAchievements(userId);
+
         res.status(201).json({
             success: true,
             data: {
@@ -59,7 +64,8 @@ const enrollInCourse = (req, res) => {
                 user_id: userId,
                 course_id: courseId,
                 course_title: course.title,
-                enrolled_at: new Date().toISOString()
+                enrolled_at: new Date().toISOString(),
+                new_achievements: newAchievements
             },
             message: `Successfully enrolled in "${course.title}"`
         });
