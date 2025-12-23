@@ -1,0 +1,112 @@
+.learning-mode-selector {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.mode-selector-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.mode-selector-description {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.mode-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.mode-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+}
+
+.mode-option:hover {
+    border-color: #4CAF50;
+    background: #f9f9f9;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mode-option.active {
+    border-color: #4CAF50;
+    background: #e8f5e9;
+}
+
+.mode-option.effective {
+    border-color: #2196F3;
+    background: #e3f2fd;
+}
+
+.mode-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.mode-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.mode-description {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.mode-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #2196F3;
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.auto-mode-info {
+    background: #e3f2fd;
+    border: 1px solid #2196F3;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.auto-mode-info p {
+    margin: 0;
+    color: #1976D2;
+    font-size: 0.9rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .mode-options {
+        grid-template-columns: 1fr;
+    }
+
+    .learning-mode-selector {
+        padding: 1rem;
+    }
+}

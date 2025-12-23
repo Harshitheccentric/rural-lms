@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { lessonAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLearningMode } from '../context/LearningModeContext';
+import { LEARNING_MODES } from '../utils/learningModeUtils';
 import Header from '../components/Header';
+import LearningModeSelector from '../components/LearningModeSelector';
 import './LessonPage.css';
 
 /**
@@ -10,15 +13,19 @@ import './LessonPage.css';
  * 
  * Phase 3c: Added authorization checks (authentication + enrollment)
  * Phase 4a: Added lesson completion tracking
+ * Phase 5a: Added mode-specific content rendering
  * 
  * TODO: Phase 5 - Add previous/next lesson navigation
  * TODO: Phase 5 - Track reading progress
- * TODO: Phase 5 - Add AI summary feature
+ * TODO: Phase 6 - Add real video streaming
+ * TODO: Phase 7 - Add real audio generation
+ * TODO: Phase 8 - Add AI summary feature
  */
 function LessonPage() {
     const { lessonId } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const { effectiveMode } = useLearningMode();
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -146,6 +153,9 @@ function LessonPage() {
                     ← Back to {lesson.course_title}
                 </button>
 
+                {/* Phase 5a: Learning mode selector */}
+                <LearningModeSelector />
+
                 <article className="lesson-content">
                     <header className="lesson-header">
                         <p className="course-title">{lesson.course_title}</p>
@@ -178,7 +188,77 @@ function LessonPage() {
                         )}
                     </header>
 
+                    {/* Phase 5a: Mode-specific content rendering */}
+                    <div className="lesson-media-container">
+                        {effectiveMode === LEARNING_MODES.VIDEO && (
+                            <div className="video-player-placeholder">
+                                <div className="placeholder-icon">▶️</div>
+                                <p className="placeholder-text">
+                                    <strong>Video player coming soon</strong>
+                                </p>
+                                <p className="placeholder-description">
+                                    Video lessons will be available in Phase 6
+                                </p>
+                                {/* TODO: Phase 6 - Integrate real video streaming */}
+                                {/* TODO: Phase 6 - Add video quality selection */}
+                                {/* TODO: Phase 6 - Implement adaptive bitrate streaming */}
+                            </div>
+                        )}
+
+                        {effectiveMode === LEARNING_MODES.AUDIO && (
+                            <>
+                                <div className="audio-player-placeholder">
+                                    <div className="placeholder-icon">🎧</div>
+                                    <p className="placeholder-text">
+                                        <strong>Audio player coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Audio lessons will be generated in Phase 7
+                                    </p>
+                                    {/* TODO: Phase 7 - Generate audio from lesson text using TTS */}
+                                    {/* TODO: Phase 7 - Add audio playback controls */}
+                                    {/* TODO: Phase 7 - Cache audio files for offline use */}
+                                </div>
+                                <div className="audio-image-placeholder">
+                                    <div className="placeholder-icon">🖼️</div>
+                                    <p className="placeholder-text">Lesson illustration</p>
+                                </div>
+                            </>
+                        )}
+
+                        {effectiveMode === LEARNING_MODES.TEXT && (
+                            <div className="text-mode-features">
+                                <div className="ai-summary-placeholder">
+                                    <div className="placeholder-icon">🤖</div>
+                                    <p className="placeholder-text">
+                                        <strong>AI Summary coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Get a personalized summary of this lesson
+                                    </p>
+                                    {/* TODO: Phase 8 - Generate AI summaries using LLM */}
+                                    {/* TODO: Phase 8 - Add summary quality indicators */}
+                                    {/* TODO: Phase 8 - Personalize summaries based on user level */}
+                                </div>
+                                <div className="offline-pack-placeholder">
+                                    <div className="placeholder-icon">📦</div>
+                                    <p className="placeholder-text">
+                                        <strong>Offline pack coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Download this lesson for offline access
+                                    </p>
+                                    {/* TODO: Phase 9 - Create offline content packs */}
+                                    {/* TODO: Phase 9 - Implement progressive download */}
+                                    {/* TODO: Phase 9 - Add offline sync status */}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Lesson text content (always shown in all modes) */}
                     <div className="lesson-body">
+                        <h2>Lesson Content</h2>
                         {lesson.content.split('\n').map((paragraph, index) => (
                             paragraph.trim() ? (
                                 <p key={index}>{paragraph}</p>
@@ -194,3 +274,4 @@ function LessonPage() {
 }
 
 export default LessonPage;
+
