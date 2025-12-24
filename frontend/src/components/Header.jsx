@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLearningMode } from '../context/LearningModeContext';
+import { getModeLabel, getModeIcon } from '../utils/learningModeUtils';
 import './Header.css';
 
 /**
  * Header Component
- * Shows navigation and authentication status
+ * Shows navigation, authentication status, and learning mode
+ * 
+ * Phase 5a: Added learning mode indicator
  * 
  * TODO: Phase 4 - Add user dropdown menu
  * TODO: Phase 4 - Add notifications
@@ -12,6 +16,7 @@ import './Header.css';
  */
 function Header() {
     const { user, logout, isAuthenticated } = useAuth();
+    const { effectiveMode } = useLearningMode();
 
     return (
         <header className="header">
@@ -21,6 +26,12 @@ function Header() {
                 </Link>
 
                 <nav className="header-nav">
+                    {/* Phase 5a: Learning mode indicator */}
+                    <div className="header-mode">
+                        <span className="mode-icon">{getModeIcon(effectiveMode)}</span>
+                        <span className="mode-label">{getModeLabel(effectiveMode)}</span>
+                    </div>
+
                     {isAuthenticated ? (
                         <div className="header-auth">
                             <Link to="/dashboard" className="header-link">

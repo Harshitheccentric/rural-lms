@@ -90,6 +90,28 @@
     border-color: var(--text-secondary);
 }
 
+/* Phase 5a: Learning mode indicator */
+.header-mode {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.header-mode .mode-icon {
+    font-size: 1.2rem;
+}
+
+.header-mode .mode-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+
 /* Responsive */
 @media (max-width: 640px) {
     .header-logo h1 {
@@ -109,5 +131,14 @@
     .header-logout {
         padding: 0.4rem 0.75rem;
         font-size: 0.85rem;
+    }
+
+    /* Hide mode label on mobile, show icon only */
+    .header-mode .mode-label {
+        display: none;
+    }
+
+    .header-mode {
+        padding: 0.4rem 0.6rem;
     }
 }

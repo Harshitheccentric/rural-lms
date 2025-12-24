@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { NetworkProvider } from './context/NetworkContext';
+import { LearningModeProvider } from './context/LearningModeContext';
+import BandwidthNotification from './components/BandwidthNotification';
 import HomePage from './pages/HomePage';
 import CoursePage from './pages/CoursePage';
 import LessonPage from './pages/LessonPage';
@@ -11,19 +12,23 @@ import './App.css';
 
 /**
  * Main App Component
- * Sets up routing and context providers
+ * Sets up routing, authentication context, and learning mode context
+ * 
+ * Phase 5a: Added learning mode system
  * 
  * Phase 6: Added NetworkProvider for adaptive content delivery
  */
 function App() {
   return (
     <AuthProvider>
-      <NetworkProvider>
+      <LearningModeProvider>
         <Router>
           <div className="app">
+            {/* Phase 5a: Bandwidth notification for mode suggestions */}
+            <BandwidthNotification />
+
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/courses/:courseId" element={<CoursePage />} />
               <Route path="/lessons/:lessonId" element={<LessonPage />} />
               <Route path="/login" element={<LoginPage />} />
@@ -31,7 +36,7 @@ function App() {
             </Routes>
           </div>
         </Router>
-      </NetworkProvider>
+      </LearningModeProvider>
     </AuthProvider>
   );
 }

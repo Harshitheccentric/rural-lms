@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { lessonAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLearningMode } from '../context/LearningModeContext';
+import { LEARNING_MODES } from '../utils/learningModeUtils';
 import Header from '../components/Header';
+import LearningModeSelector from '../components/LearningModeSelector';
 import './LessonPage.css';
 
 /**
@@ -10,26 +13,19 @@ import './LessonPage.css';
  * 
  * Phase 3c: Added authorization checks (authentication + enrollment)
  * Phase 4a: Added lesson completion tracking
- * Phase 5: Added offline reading capabilities
- * Phase 6: Added adaptive content delivery based on bandwidth
+ * Phase 5a: Added mode-specific content rendering
+ * 
+ * TODO: Phase 5 - Add previous/next lesson navigation
+ * TODO: Phase 5 - Track reading progress
+ * TODO: Phase 6 - Add real video streaming
+ * TODO: Phase 7 - Add real audio generation
+ * TODO: Phase 8 - Add AI summary feature
  */
 function LessonPage() {
     const { lessonId } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-
-    // Network state (default values for now - will be from context later)
-    const [bandwidth, setBandwidth] = useState('medium');
-    const [bandwidthInfo, setBandwidthInfo] = useState(null);
-    const [dataSaverMode, setDataSaverMode] = useState(false);
-
-    // Bandwidth categories
-    const BANDWIDTH_CATEGORIES = {
-        LOW: 'low',
-        MEDIUM: 'medium',
-        HIGH: 'high'
-    };
-
+    const { effectiveMode } = useLearningMode();
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -419,138 +415,10 @@ function LessonPage() {
                     ← Back to {lesson.course_title}
                 </button>
 
-                {/* Network Controls */}
-                <div className="network-controls">
-                    <div className="network-status">
-                        <span className="network-icon">{getBandwidthIcon(bandwidth)}</span>
-                        <span className="network-label">{getBandwidthLabel(bandwidth)}</span>
-                        {bandwidthInfo?.speed && bandwidthInfo.speed !== 'Manual' && (
-                            <span className="network-speed">({bandwidthInfo.speed} Mbps)</span>
-                        )}
-                        {bandwidthInfo?.isManual && (
-                            <span className="manual-badge">Manual</span>
-                        )}
-                    </div>
+                {/* Phase 5a: Learning mode selector */}
+                <LearningModeSelector />
 
-                    <div className="network-actions">
-                        {/* Bandwidth Selector */}
-                        <select 
-                            className="bandwidth-selector"
-                            value={bandwidth}
-                            onChange={(e) => handleBandwidthChange(e.target.value)}
-                            title="Select bandwidth quality"
-                        >
-                            <option value={BANDWIDTH_CATEGORIES.LOW}>Low Quality (Text/PDF)</option>
-                            <option value={BANDWIDTH_CATEGORIES.MEDIUM}>Medium Quality (Audio)</option>
-                            <option value={BANDWIDTH_CATEGORIES.HIGH}>High Quality (Video)</option>
-                        </select>
-
-                        {/* Auto Detect Button */}
-                        {bandwidthInfo?.isManual && (
-                            <button
-                                className="auto-detect-btn"
-                                onClick={clearManualBandwidth}
-                                title="Auto-detect bandwidth"
-                            >
-                                Auto
-                            </button>
-                        )}
-
-                        {/* Data Saver Toggle */}
-                        <button
-                            className={`data-saver-toggle ${dataSaverMode ? 'active' : ''}`}
-                            onClick={toggleDataSaver}
-                            title={dataSaverMode ? 'Disable data saver' : 'Enable data saver'}
-                        >
-                            {dataSaverMode ? '🔋 Data Saver ON' : '🔋 Data Saver'}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Show available variants */}
-                {lesson.available_variants && lesson.available_variants.length > 0 && (
-                    <div className="content-variants-info">
-                        <span>Available formats:</span>
-                        {lesson.available_variants.map((variant, index) => (
-                            <span key={index} className={`variant-chip ${variant.content_type}`}>
-                                {variant.content_type}
-                            </span>
-                        ))}
-                    </div>
-                )}
-
-                {/* Reader Controls */}
-                <div className="reader-controls">
-                    <div className="reader-controls-left">
-                        {/* Offline Indicator */}
-                        {isOffline && (
-                            <span className="offline-badge">📱 Offline Mode</span>
-                        )}
-                        {isSavedOffline && !isOffline && (
-                            <span className="saved-badge">💾 Saved</span>
-                        )}
-                    </div>
-
-                    <div className="reader-controls-right">
-                        {/* Text Size Controls */}
-                        <div className="text-size-controls">
-                            <span className="control-label">Text Size:</span>
-                            <button
-                                className={`size-btn ${textSize === 'small' ? 'active' : ''}`}
-                                onClick={() => handleTextSizeChange('small')}
-                                title="Small text"
-                            >
-                                A
-                            </button>
-                            <button
-                                className={`size-btn ${textSize === 'medium' ? 'active' : ''}`}
-                                onClick={() => handleTextSizeChange('medium')}
-                                title="Medium text"
-                            >
-                                A
-                            </button>
-                            <button
-                                className={`size-btn ${textSize === 'large' ? 'active' : ''}`}
-                                onClick={() => handleTextSizeChange('large')}
-                                title="Large text"
-                            >
-                                A
-                            </button>
-                        </div>
-
-                        {/* Night Mode Toggle */}
-                        <button
-                            className={`night-mode-toggle ${nightMode ? 'active' : ''}`}
-                            onClick={handleNightModeToggle}
-                            title={nightMode ? 'Disable night mode' : 'Enable night mode'}
-                        >
-                            {nightMode ? '☀️' : '🌙'}
-                        </button>
-
-                        {/* Save/Remove Offline */}
-                        {!isOffline && (
-                            isSavedOffline ? (
-                                <button
-                                    className="offline-btn remove"
-                                    onClick={handleRemoveOffline}
-                                    title="Remove offline version"
-                                >
-                                    🗑️ Remove Offline
-                                </button>
-                            ) : (
-                                <button
-                                    className="offline-btn save"
-                                    onClick={handleSaveOffline}
-                                    title="Save for offline reading"
-                                >
-                                    💾 Save Offline
-                                </button>
-                            )
-                        )}
-                    </div>
-                </div>
-
-                <article className={`lesson-content text-${textSize}`}>
+                <article className="lesson-content">
                     <header className="lesson-header">
                         <p className="course-title">{lesson.course_title}</p>
                         <h1>{lesson.title}</h1>
@@ -582,8 +450,85 @@ function LessonPage() {
                         )}
                     </header>
 
-                    {/* Render content based on type */}
-                    {renderContent()}
+                    {/* Phase 5a: Mode-specific content rendering */}
+                    <div className="lesson-media-container">
+                        {effectiveMode === LEARNING_MODES.VIDEO && (
+                            <div className="video-player-placeholder">
+                                <div className="placeholder-icon">▶️</div>
+                                <p className="placeholder-text">
+                                    <strong>Video player coming soon</strong>
+                                </p>
+                                <p className="placeholder-description">
+                                    Video lessons will be available in Phase 6
+                                </p>
+                                {/* TODO: Phase 6 - Integrate real video streaming */}
+                                {/* TODO: Phase 6 - Add video quality selection */}
+                                {/* TODO: Phase 6 - Implement adaptive bitrate streaming */}
+                            </div>
+                        )}
+
+                        {effectiveMode === LEARNING_MODES.AUDIO && (
+                            <>
+                                <div className="audio-player-placeholder">
+                                    <div className="placeholder-icon">🎧</div>
+                                    <p className="placeholder-text">
+                                        <strong>Audio player coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Audio lessons will be generated in Phase 7
+                                    </p>
+                                    {/* TODO: Phase 7 - Generate audio from lesson text using TTS */}
+                                    {/* TODO: Phase 7 - Add audio playback controls */}
+                                    {/* TODO: Phase 7 - Cache audio files for offline use */}
+                                </div>
+                                <div className="audio-image-placeholder">
+                                    <div className="placeholder-icon">🖼️</div>
+                                    <p className="placeholder-text">Lesson illustration</p>
+                                </div>
+                            </>
+                        )}
+
+                        {effectiveMode === LEARNING_MODES.TEXT && (
+                            <div className="text-mode-features">
+                                <div className="ai-summary-placeholder">
+                                    <div className="placeholder-icon">🤖</div>
+                                    <p className="placeholder-text">
+                                        <strong>AI Summary coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Get a personalized summary of this lesson
+                                    </p>
+                                    {/* TODO: Phase 8 - Generate AI summaries using LLM */}
+                                    {/* TODO: Phase 8 - Add summary quality indicators */}
+                                    {/* TODO: Phase 8 - Personalize summaries based on user level */}
+                                </div>
+                                <div className="offline-pack-placeholder">
+                                    <div className="placeholder-icon">📦</div>
+                                    <p className="placeholder-text">
+                                        <strong>Offline pack coming soon</strong>
+                                    </p>
+                                    <p className="placeholder-description">
+                                        Download this lesson for offline access
+                                    </p>
+                                    {/* TODO: Phase 9 - Create offline content packs */}
+                                    {/* TODO: Phase 9 - Implement progressive download */}
+                                    {/* TODO: Phase 9 - Add offline sync status */}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Lesson text content (always shown in all modes) */}
+                    <div className="lesson-body">
+                        <h2>Lesson Content</h2>
+                        {lesson.content.split('\n').map((paragraph, index) => (
+                            paragraph.trim() ? (
+                                <p key={index}>{paragraph}</p>
+                            ) : (
+                                <br key={index} />
+                            )
+                        ))}
+                    </div>
                 </article>
             </div>
         </>
@@ -591,3 +536,4 @@ function LessonPage() {
 }
 
 export default LessonPage;
+
